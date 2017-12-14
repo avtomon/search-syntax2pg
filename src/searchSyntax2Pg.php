@@ -8,6 +8,14 @@ class searchSyntax2PgException extends \Exception
 
 class searchSyntax2Pg
 {
+    /**
+     * Возвращает поисковую фразу в формате корректном для добавления в запрос к БД PostgreSQL для поиск совпадений
+     *
+     * @param string $search - поисковая фраза
+     * @param string $syntaxModel - формат входных данных
+     *
+     * @return string
+     */
     public static function getPgSyntax(string $search, string $syntaxModel = 'google'):string
     {
         $search = trim($search);
@@ -49,10 +57,17 @@ class searchSyntax2Pg
             }
         }
 
-        return $result;
+        return implode('', $result);
     }
 
-    public static function getExactFromGoogle(string $str):array
+    /**
+     * Возвращает подстроку "точного совпадения" ("слово1 слово2..." или !слово) в Posgres-формате
+     *
+     * @param string $str подстрака точного совпадения
+     *
+     * @return string
+     */
+    public static function getExactFromGoogle(string $str): string
     {
         $str = trim($str);
         if (!$str) {
