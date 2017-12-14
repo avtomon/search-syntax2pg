@@ -1,1 +1,1 @@
-# google2pg-search-syntax
+# searchSyntax2Pg

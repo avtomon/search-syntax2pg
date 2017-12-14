@@ -1,5 +1,5 @@
 {
-    "name": "avtomon/googleSearchSyntax2Pg",
+    "name": "avtomon/searchSyntax2Pg",
     "description": "Yet another PHP PDO wrapper",
     "type": "project",
     "minimum-stability": "dev",
