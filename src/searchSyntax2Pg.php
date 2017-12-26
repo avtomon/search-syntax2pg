@@ -16,28 +16,29 @@ class searchSyntax2Pg
      *
      * @return string
      */
-    public static function getPgSyntax(string $search, string $syntaxModel = 'google'):string
+    public static function getPgSyntax(string $search, string $syntaxModel = 'google', string $config = 'russian'):string
     {
         $search = trim($search);
         if (!$search || !preg_match_all('/(-?[^\s"]+)|"(.+?)"/i', $search, $matches)) {
             throw new googleSearchSyntax2PgException('Поисковая фраза не содержит слов');
         }
 
-        switch ($syntaxModel) {
-            case 'google':
-                $condition = strpos($match, ' ') !== false;
-                break;
-
-            case 'yandex':
-                $condition = strpos($match, ' ') !== false || $match[0] === '!';
-                break;
-
-            default:
-                throw new googleSearchSyntax2PgException("Модель синтаксиса $syntaxModel не поддерживается");
-        }
-
         $result = [];
+        $matches = $matches[0];
         foreach ($matches as $index => $match) {
+            switch ($syntaxModel) {
+                case 'google':
+                    $condition = strpos($match, ' ') !== false;
+                    break;
+
+                case 'yandex':
+                    $condition = strpos($match, ' ') !== false || $match[0] === '!';
+                    break;
+
+                default:
+                    throw new searchSyntax2PgException("Модель синтаксиса $syntaxModel не поддерживается");
+            }
+
             if ($condition) {
                 $result[] = self::getExactFromGoogle($match) . '::tsquery';
                 continue;
@@ -50,7 +51,7 @@ class searchSyntax2Pg
                 continue;
             }
 
-            $result[] = "to_tsuqery('" . str_replace('-', '!', $match) . "')";
+            $result[] = "to_tsuqery('$config', " . str_replace('-', '!', $match) . "')";
 
             if (!empty($matches[$index + 1])) {
                 $result[] = '&&';
@@ -67,11 +68,11 @@ class searchSyntax2Pg
      *
      * @return string
      */
-    public static function getExactFromGoogle(string $str): string
+    public static function getExact(string $str): string
     {
         $str = trim($str);
         if (!$str) {
-            throw new googleSearchSyntax2PgException('Точная поисковая фраза не содержит слов');
+            throw new searchSyntax2PgException('Точная поисковая фраза не содержит слов');
         }
 
         if (!preg_match_all('/[\*\s]+/i', $str, $matches)) {
