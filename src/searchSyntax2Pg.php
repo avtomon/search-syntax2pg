@@ -16,11 +16,11 @@ class searchSyntax2Pg
      *
      * @return string
      */
-    public static function getPgSyntax(string $search, string $syntaxModel = 'google', string $config = 'russian'):string
+    public static function getPgSyntax(string $search, string $syntaxModel = 'google', string $config = 'russian'): ?string
     {
         $search = trim($search);
         if (!$search || !preg_match_all('/(-?[^\s"]+)|"(.+?)"/i', $search, $matches)) {
-            throw new googleSearchSyntax2PgException('Поисковая фраза не содержит слов');
+            return null;
         }
 
         $result = [];
