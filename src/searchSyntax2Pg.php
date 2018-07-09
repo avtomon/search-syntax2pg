@@ -2,10 +2,22 @@
 
 namespace avtomon;
 
+/**
+ * Класс ошибок
+ *
+ * Class searchSyntax2PgException
+ * @package avtomon
+ */
 class searchSyntax2PgException extends CustomException
 {
 }
 
+/**
+ * Полнотекстовый поиск в PostgreSQL c поддержкой поискового синтаксиса Google и Yandex
+ *
+ * Class searchSyntax2Pg
+ * @package avtomon
+ */
 class searchSyntax2Pg
 {
     /**
@@ -13,8 +25,11 @@ class searchSyntax2Pg
      *
      * @param string $search - поисковая фраза
      * @param string $syntaxModel - формат входных данных
+     * @param string $config - язык
      *
-     * @return string
+     * @return null|string
+     *
+     * @throws searchSyntax2PgException
      */
     public static function getPgSyntax(string $search, string $syntaxModel = 'google', string $config = 'russian'): ?string
     {
@@ -40,12 +55,12 @@ class searchSyntax2Pg
             }
 
             if ($condition) {
-                $result[] = self::getExactFromGoogle($match) . '::tsquery';
+                $result[] = self::getExact($match) . '::tsquery';
                 continue;
             }
 
-            if ($match == 'OR') {
-                if ($index != 0 && !empty($matches[$index + 1])) {
+            if ($match === 'OR') {
+                if ($index !== 0 && !empty($matches[$index + 1])) {
                     $result[] = '||';
                 }
                 continue;
@@ -67,6 +82,8 @@ class searchSyntax2Pg
      * @param string $str подстрака точного совпадения
      *
      * @return string
+     *
+     * @throws searchSyntax2PgException
      */
     public static function getExact(string $str): string
     {
@@ -81,7 +98,7 @@ class searchSyntax2Pg
 
         foreach ($matches[0] as $match)
         {
-            $len = strlen(str_replace(' ', '', $match)) + 1;
+            $len = \strlen(str_replace(' ', '', $match)) + 1;
             $str = str_replace($match, "<$len>", $str);
         }
 
