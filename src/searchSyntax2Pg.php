@@ -8,7 +8,7 @@ namespace avtomon;
  * Class searchSyntax2PgException
  * @package avtomon
  */
-class searchSyntax2PgException extends CustomException
+class searchSyntax2PgException extends \Exception
 {
 }
 
